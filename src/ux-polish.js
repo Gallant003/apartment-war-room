@@ -1,5 +1,9 @@
 import './final.js';
 import './styles-home-polish.css';
+import { hasSupabaseConfig, supabase } from './supabaseClient.js';
+
+let observing = false;
+let loginBusy = false;
 
 function waitForHome() {
   const nav = document.querySelector('.bottom-nav');
@@ -7,6 +11,7 @@ function waitForHome() {
   polishNav();
   enhanceDashboard();
   tagListingCards();
+  installLoginFallback();
   observeChanges();
 }
 
@@ -15,8 +20,46 @@ waitForHome();
 function polishNav() {
   document.querySelectorAll('.bottom-nav button').forEach((button) => {
     const text = button.textContent.trim();
-    button.innerHTML = text.replace(/[⌂⌕+×◷]/g, '').trim() || text;
+    const clean = text.replace(/[⌂⌕+×◷]/g, '').trim() || text;
+    if (button.textContent.trim() !== clean) button.textContent = clean;
   });
+}
+
+function installLoginFallback() {
+  if (document.body.dataset.loginFallback === 'true') return;
+  document.body.dataset.loginFallback = 'true';
+  document.addEventListener('click', async (event) => {
+    const button = event.target.closest('[data-act="login"]');
+    if (!button || loginBusy) return;
+    event.preventDefault();
+    event.stopPropagation();
+    const email = document.querySelector('#email')?.value?.trim();
+    if (!email) return showToast('Enter your email first.');
+    if (!hasSupabaseConfig) return showToast('Supabase is not connected.');
+    loginBusy = true;
+    button.disabled = true;
+    const original = button.textContent;
+    button.textContent = 'Sending...';
+    try {
+      const { error } = await supabase.auth.signInWithOtp({ email, options: { emailRedirectTo: location.origin } });
+      showToast(error ? error.message : 'Check your email for the login link.');
+    } catch (error) {
+      showToast(error?.message || 'Login link failed.');
+    } finally {
+      loginBusy = false;
+      button.disabled = false;
+      button.textContent = original || 'Send link';
+    }
+  }, true);
+}
+
+function showToast(message) {
+  document.querySelector('.toast')?.remove();
+  const toast = document.createElement('div');
+  toast.className = 'toast';
+  toast.textContent = message;
+  document.body.appendChild(toast);
+  setTimeout(() => toast.remove(), 2600);
 }
 
 function enhanceDashboard() {
@@ -94,12 +137,17 @@ function tagListingCards() {
 }
 
 function observeChanges() {
+  if (observing) return;
+  observing = true;
   const root = document.querySelector('#app');
   if (!root) return;
   const observer = new MutationObserver(() => {
-    polishNav();
-    enhanceDashboard();
-    tagListingCards();
+    requestAnimationFrame(() => {
+      polishNav();
+      enhanceDashboard();
+      tagListingCards();
+      installLoginFallback();
+    });
   });
   observer.observe(root, { childList: true, subtree: true });
 }
