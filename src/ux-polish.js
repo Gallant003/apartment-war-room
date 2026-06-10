@@ -2,9 +2,8 @@ import './final.js';
 import './styles-home-polish.css';
 
 function waitForHome() {
-  const dashboard = document.querySelector('#dashboard');
   const nav = document.querySelector('.bottom-nav');
-  if (!dashboard || !nav) return setTimeout(waitForHome, 250);
+  if (!nav) return setTimeout(waitForHome, 250);
   polishNav();
   enhanceDashboard();
   tagListingCards();
@@ -21,34 +20,63 @@ function polishNav() {
 }
 
 function enhanceDashboard() {
-  const dashboard = document.querySelector('#dashboard');
-  if (!dashboard || dashboard.querySelector('.home-choice-grid')) return;
+  const content = document.querySelector('.content-card');
+  const head = document.querySelector('.view-head h2');
+  const dashboard = document.querySelector('.dashboard-grid');
+  if (!content || !dashboard || !head || head.textContent.trim() !== 'Dashboard') return;
+  if (content.querySelector('.home-command')) return;
 
-  const choices = document.createElement('div');
-  choices.className = 'home-choice-grid';
-  choices.innerHTML = `
-    <button class="home-choice primary-choice" data-home-view="listings"><strong>Review active leads</strong><span>Search, filter, edit, and move listings through the pipeline.</span></button>
-    <button class="home-choice" data-home-view="add"><strong>Add a listing</strong><span>Capture a new lead without digging through the full board.</span></button>
-    <button class="home-choice" data-home-view="history"><strong>See crossed-off places</strong><span>Keep rejected options visible without cluttering decisions.</span></button>
-    <button class="home-choice" data-log-direct="true"><strong>Open change log</strong><span>See who changed what once the log SQL is enabled.</span></button>
+  content.classList.add('home-focused');
+
+  const counts = getCounts();
+  const command = document.createElement('div');
+  command.className = 'home-command';
+  command.innerHTML = `
+    <div>
+      <div class="home-kicker">Command Center</div>
+      <h3>What do you want to work on?</h3>
+      <p>Start with the main board, or jump straight into the part of the search that matters right now.</p>
+    </div>
+    <button class="home-primary" data-home-view="listings">
+      <div class="home-kicker">Recommended</div>
+      <strong>Review active leads</strong>
+      <span>Compare live options, move listings through the pipeline, and decide what deserves attention next.</span>
+      <i class="home-arrow">›</i>
+    </button>
+    <div class="home-secondary-grid">
+      <button class="home-secondary" data-home-view="add"><strong>Add a listing</strong><span>Capture a new place quickly.</span></button>
+      <button class="home-secondary" data-home-view="history"><strong>Crossed off</strong><span>Review rejected options.</span></button>
+      <button class="home-secondary" data-log-direct="true"><strong>Change log</strong><span>See edits after SQL setup.</span></button>
+    </div>
+    <div class="home-micro-stats">
+      <div><span>Active</span><b>${counts.active}</b></div>
+      <div><span>To Call</span><b>${counts.toCall}</b></div>
+      <div><span>Finalists</span><b>${counts.finalists}</b></div>
+      <div><span>History</span><b>${counts.history}</b></div>
+    </div>
   `;
-  dashboard.prepend(choices);
 
-  choices.querySelectorAll('[data-home-view]').forEach((button) => {
+  const viewHead = content.querySelector('.view-head');
+  viewHead?.after(command);
+
+  command.querySelectorAll('[data-home-view]').forEach((button) => {
     button.addEventListener('click', () => {
-      const target = button.dataset.homeView;
-      document.querySelector(`.bottom-nav [data-view="${target}"]`)?.click();
+      document.querySelector(`.bottom-nav [data-view="${button.dataset.homeView}"]`)?.click();
     });
   });
 
-  choices.querySelector('[data-log-direct]')?.addEventListener('click', () => {
+  command.querySelector('[data-log-direct]')?.addEventListener('click', () => {
     document.querySelector('[data-log-tab]')?.click();
   });
+}
 
-  const card = document.createElement('div');
-  card.className = 'decision-card';
-  card.innerHTML = '<h3>Choose your path.</h3><p>This home page is just a launchpad. Jump directly into the part of the search you care about right now.</p><div class="lead-bar"><span style="width:82%"></span></div>';
-  dashboard.prepend(card);
+function getCounts() {
+  const stats = Array.from(document.querySelectorAll('.hero-stats div'));
+  const read = (label) => {
+    const item = stats.find((div) => div.querySelector('span')?.textContent.trim() === label);
+    return item?.querySelector('strong')?.textContent.trim() || '0';
+  };
+  return { active: read('Active'), toCall: read('To Call'), finalists: read('Finalists'), history: read('History') };
 }
 
 function tagListingCards() {
