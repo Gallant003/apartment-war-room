@@ -2,6 +2,7 @@ import './final.js';
 import './styles-home-polish.css';
 import './blue-fixes.css';
 import './final-overrides.css';
+import './final-tweaks-2.css';
 import { hasSupabaseConfig, supabase } from './supabaseClient.js';
 
 let observing = false;
@@ -111,12 +112,12 @@ function enhanceDashboard() {
       <p></p>
     </div>
     <button class="home-primary" data-home-view="listings"><div class="home-kicker">Recommended</div><strong>Review active leads</strong><span>Compare, prioritize, and move fast.</span><i class="home-arrow">›</i></button>
+    <div class="home-micro-stats"><div><span>Active</span><b>${counts.active}</b></div><div><span>To Call</span><b>${counts.toCall}</b></div><div><span>Finalists</span><b>${counts.finalists}</b></div><div><span>History</span><b>${counts.history}</b></div></div>
     <div class="home-secondary-grid">
       <button class="home-secondary" data-home-view="add"><strong>Add a listing</strong><span>Capture a new place quickly.</span></button>
       <button class="home-secondary" data-home-view="history"><strong>Crossed off</strong><span>Review rejected options.</span></button>
       <button class="home-secondary" data-log-direct="true"><strong>Change log</strong><span>See edits after SQL setup.</span></button>
-    </div>
-    <div class="home-micro-stats"><div><span>Active</span><b>${counts.active}</b></div><div><span>To Call</span><b>${counts.toCall}</b></div><div><span>Finalists</span><b>${counts.finalists}</b></div><div><span>History</span><b>${counts.history}</b></div></div>`;
+    </div>`;
 
   content.querySelector('.view-head')?.after(command);
   command.querySelectorAll('[data-home-view]').forEach((button) => button.addEventListener('click', () => document.querySelector(`.bottom-nav [data-view="${button.dataset.homeView}"]`)?.click()));
@@ -153,7 +154,12 @@ function getCounts() {
 function tagListingCards() {
   document.querySelectorAll('.listing-card').forEach((card) => {
     const status = card.querySelector('.chips span')?.textContent?.trim();
+    const fallbackStatus = card.querySelector('.image-fallback span')?.textContent?.trim();
     if (status) card.dataset.status = status;
+    if (status && fallbackStatus && status.toLowerCase() === fallbackStatus.toLowerCase()) {
+      card.querySelector('.chips span')?.classList.add('is-duplicate-status');
+      card.querySelector('.image-fallback span')?.setAttribute('data-deduped', 'true');
+    }
     const score = Number(card.querySelector('.score-badge strong')?.textContent || 0);
     if (!card.querySelector('.lead-bar') && score) {
       const bar = document.createElement('div');
