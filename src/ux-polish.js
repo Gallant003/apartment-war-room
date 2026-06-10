@@ -1,6 +1,7 @@
 import './final.js';
 import './styles-home-polish.css';
 import './blue-fixes.css';
+import './final-overrides.css';
 import { hasSupabaseConfig, supabase } from './supabaseClient.js';
 
 let observing = false;
@@ -106,10 +107,10 @@ function enhanceDashboard() {
   command.innerHTML = `
     <div>
       <div class="home-kicker">Command Center</div>
-      <h3>What do you want to work on?</h3>
-      <p>Start with the main board, or jump straight into the part of the search that matters right now.</p>
+      <h3>Choose your next move.</h3>
+      <p></p>
     </div>
-    <button class="home-primary" data-home-view="listings"><div class="home-kicker">Recommended</div><strong>Review active leads</strong><span>Compare live options, move listings through the pipeline, and decide what deserves attention next.</span><i class="home-arrow">›</i></button>
+    <button class="home-primary" data-home-view="listings"><div class="home-kicker">Recommended</div><strong>Review active leads</strong><span>Compare, prioritize, and move fast.</span><i class="home-arrow">›</i></button>
     <div class="home-secondary-grid">
       <button class="home-secondary" data-home-view="add"><strong>Add a listing</strong><span>Capture a new place quickly.</span></button>
       <button class="home-secondary" data-home-view="history"><strong>Crossed off</strong><span>Review rejected options.</span></button>
