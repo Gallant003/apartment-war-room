@@ -5,6 +5,7 @@ import './blue-fixes.css';
 import './final-overrides.css';
 import './final-tweaks-2.css';
 import './listing-compact.css';
+import './final-night.css';
 import { hasSupabaseConfig, supabase } from './supabaseClient.js';
 
 let observing = false;
