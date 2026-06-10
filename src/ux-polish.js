@@ -6,6 +6,7 @@ import './final-overrides.css';
 import './final-tweaks-2.css';
 import './listing-compact.css';
 import './final-night.css';
+import './home-pill-actions.css';
 import { hasSupabaseConfig, supabase } from './supabaseClient.js';
 
 let observing = false;
@@ -45,9 +46,9 @@ function installHistoryRouting() {
   if (document.body.dataset.historyRouting === 'true') return;
   document.body.dataset.historyRouting = 'true';
   document.addEventListener('click', (event) => {
-    const button = event.target.closest('.bottom-nav button,[data-home-view],[data-log-direct]');
+    const button = event.target.closest('.bottom-nav button,[data-home-view],[data-log-direct],[data-home-filter]');
     if (!button) return;
-    const route = button.dataset.homeView || button.dataset.routeKey || (button.dataset.logDirect ? 'log' : '');
+    const route = button.dataset.homeView || button.dataset.routeKey || (button.dataset.logDirect ? 'log' : '') || (button.dataset.homeFilter ? button.dataset.homeFilter : '');
     if (!route || route === currentRoute) return;
     currentRoute = route;
     history.pushState({ route }, '', `#${route}`);
@@ -56,6 +57,7 @@ function installHistoryRouting() {
     const route = location.hash.replace('#', '') || 'dashboard';
     currentRoute = route;
     if (route === 'log') document.querySelector('[data-log-tab]')?.click();
+    else if (['active','to-call','finalists','history'].includes(route)) openHomeFilter(route);
     else document.querySelector(`.bottom-nav [data-view="${route}"]`)?.click();
   });
 }
@@ -115,7 +117,12 @@ function enhanceDashboard() {
       <p></p>
     </div>
     <button class="home-primary" data-home-view="listings"><div class="home-kicker">Recommended</div><strong>Review active leads</strong><span>Compare, prioritize, and move fast.</span><i class="home-arrow">›</i></button>
-    <div class="home-micro-stats"><div><span>Active</span><b>${counts.active}</b></div><div><span>To Call</span><b>${counts.toCall}</b></div><div><span>Finalists</span><b>${counts.finalists}</b></div><div><span>History</span><b>${counts.history}</b></div></div>
+    <div class="home-micro-stats">
+      <button data-home-filter="active"><span>Active</span><b>${counts.active}</b></button>
+      <button data-home-filter="to-call"><span>To Call</span><b>${counts.toCall}</b></button>
+      <button data-home-filter="finalists"><span>Finalists</span><b>${counts.finalists}</b></button>
+      <button data-home-filter="history"><span>History</span><b>${counts.history}</b></button>
+    </div>
     <div class="home-secondary-grid">
       <button class="home-secondary" data-home-view="add"><strong>Add a listing</strong><span>Capture a new place quickly.</span></button>
       <button class="home-secondary" data-home-view="history"><strong>Crossed off</strong><span>Review rejected options.</span></button>
@@ -124,7 +131,23 @@ function enhanceDashboard() {
 
   content.querySelector('.view-head')?.after(command);
   command.querySelectorAll('[data-home-view]').forEach((button) => button.addEventListener('click', () => document.querySelector(`.bottom-nav [data-view="${button.dataset.homeView}"]`)?.click()));
+  command.querySelectorAll('[data-home-filter]').forEach((button) => button.addEventListener('click', () => openHomeFilter(button.dataset.homeFilter)));
   command.querySelector('[data-log-direct]')?.addEventListener('click', () => document.querySelector('[data-log-tab]')?.click());
+}
+
+function openHomeFilter(kind) {
+  if (kind === 'history') {
+    document.querySelector('.bottom-nav [data-view="history"]')?.click();
+    return;
+  }
+  document.querySelector('.bottom-nav [data-view="listings"]')?.click();
+  setTimeout(() => {
+    const select = document.querySelector('#statusFilter');
+    if (!select) return;
+    const value = kind === 'to-call' ? 'To Call' : kind === 'finalists' ? 'Finalist' : 'All';
+    select.value = value;
+    select.dispatchEvent(new Event('change', { bubbles: true }));
+  }, 30);
 }
 
 function compactAddForm() {
