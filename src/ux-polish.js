@@ -8,6 +8,8 @@ import './listing-compact.css';
 import './final-night.css';
 import './home-pill-actions.css';
 import './apartment-holo.css';
+import './landing-premium.css';
+import { enhancePremiumLanding } from './landing-motion.js';
 import { hasSupabaseConfig, supabase } from './supabaseClient.js';
 
 let observing = false;
@@ -20,6 +22,7 @@ function waitForHome() {
   installLoginFallback();
   normalizeNav();
   enhanceDashboard();
+  enhancePremiumLanding();
   compactAddForm();
   tagListingCards();
   installHistoryRouting();
@@ -203,6 +206,7 @@ function observeChanges() {
   const observer = new MutationObserver(() => requestAnimationFrame(() => {
     normalizeNav();
     enhanceDashboard();
+    enhancePremiumLanding();
     compactAddForm();
     tagListingCards();
     installLoginFallback();
