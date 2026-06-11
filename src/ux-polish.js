@@ -1,4 +1,5 @@
 import './final.js';
+import './household-click-guard.js';
 import './styles-v2-polish.css';
 import './styles-home-polish.css';
 import './blue-fixes.css';
