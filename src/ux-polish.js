@@ -13,6 +13,7 @@ import './landing-premium.css';
 import './landing-spacing-fixes.css';
 import './listings-decision.css';
 import './household-access.css';
+import './mobile-viewport-fix.css';
 import { enhancePremiumLanding } from './landing-motion.js';
 import { enhanceDecisionListings } from './listings-decision.js';
 import { enhanceStarterRestore } from './starter-restore.js';
