@@ -7,6 +7,7 @@ import './final-tweaks-2.css';
 import './listing-compact.css';
 import './final-night.css';
 import './home-pill-actions.css';
+import './apartment-holo.css';
 import { hasSupabaseConfig, supabase } from './supabaseClient.js';
 
 let observing = false;
