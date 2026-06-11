@@ -9,6 +9,7 @@ import './final-night.css';
 import './home-pill-actions.css';
 import './apartment-holo.css';
 import './landing-premium.css';
+import './landing-spacing-fixes.css';
 import { enhancePremiumLanding } from './landing-motion.js';
 import { hasSupabaseConfig, supabase } from './supabaseClient.js';
 
