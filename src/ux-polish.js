@@ -15,6 +15,7 @@ import './listings-decision.css';
 import './household-access.css';
 import { enhancePremiumLanding } from './landing-motion.js';
 import { enhanceDecisionListings } from './listings-decision.js';
+import { enhanceStarterRestore } from './starter-restore.js';
 import { hasSupabaseConfig, supabase } from './supabaseClient.js';
 
 let observing = false;
@@ -31,6 +32,7 @@ function waitForHome() {
   compactAddForm();
   tagListingCards();
   enhanceDecisionListings();
+  enhanceStarterRestore();
   installHistoryRouting();
   observeChanges();
 }
@@ -217,6 +219,7 @@ function observeChanges() {
     compactAddForm();
     tagListingCards();
     enhanceDecisionListings();
+    enhanceStarterRestore();
     installLoginFallback();
   }));
   observer.observe(root, { childList: true, subtree: true });
