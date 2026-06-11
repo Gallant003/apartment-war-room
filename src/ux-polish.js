@@ -11,6 +11,7 @@ import './apartment-holo.css';
 import './landing-premium.css';
 import './landing-spacing-fixes.css';
 import './listings-decision.css';
+import './household-access.css';
 import { enhancePremiumLanding } from './landing-motion.js';
 import { enhanceDecisionListings } from './listings-decision.js';
 import { hasSupabaseConfig, supabase } from './supabaseClient.js';
@@ -74,6 +75,7 @@ function installLoginFallback() {
   if (document.body.dataset.loginFallback === 'true') return;
   document.body.dataset.loginFallback = 'true';
   document.addEventListener('click', async (event) => {
+    if (document.querySelector('#accessCode')) return;
     const button = event.target.closest('[data-act="login"]');
     if (!button || loginBusy) return;
     event.preventDefault();
