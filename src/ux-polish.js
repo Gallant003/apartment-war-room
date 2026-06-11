@@ -10,7 +10,9 @@ import './home-pill-actions.css';
 import './apartment-holo.css';
 import './landing-premium.css';
 import './landing-spacing-fixes.css';
+import './listings-decision.css';
 import { enhancePremiumLanding } from './landing-motion.js';
+import { enhanceDecisionListings } from './listings-decision.js';
 import { hasSupabaseConfig, supabase } from './supabaseClient.js';
 
 let observing = false;
@@ -26,6 +28,7 @@ function waitForHome() {
   enhancePremiumLanding();
   compactAddForm();
   tagListingCards();
+  enhanceDecisionListings();
   installHistoryRouting();
   observeChanges();
 }
@@ -210,6 +213,7 @@ function observeChanges() {
     enhancePremiumLanding();
     compactAddForm();
     tagListingCards();
+    enhanceDecisionListings();
     installLoginFallback();
   }));
   observer.observe(root, { childList: true, subtree: true });
