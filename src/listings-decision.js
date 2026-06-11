@@ -11,7 +11,6 @@ function addPriorityHeader(){
   const filters=card?.querySelector('.filters');
   if(!card||!filters||card.querySelector('.listing-priority')) return;
   const filter=document.querySelector('#statusFilter')?.value || 'All';
-  const active=document.querySelectorAll('.listing-card').length;
   const panel=document.createElement('div');
   panel.className='listing-priority';
   panel.innerHTML=`<div class="priority-copy"><strong>Next up, not everything.</strong><span>Start with the places that need a call, tour, or final decision. Details are tucked away until needed.</span></div><div class="priority-chips"><button class="priority-chip ${filter==='All'?'is-on':''}" data-priority-filter="All">Next up</button><button class="priority-chip ${filter==='To Call'?'is-on':''}" data-priority-filter="To Call">To call</button><button class="priority-chip ${filter==='Tour Scheduled'?'is-on':''}" data-priority-filter="Tour Scheduled">Tours</button><button class="priority-chip ${filter==='Finalist'?'is-on':''}" data-priority-filter="Finalist">Finalists</button><button class="priority-chip" data-priority-view="history">History</button></div>`;
@@ -28,7 +27,6 @@ function addPriorityHeader(){
 function enhanceCard(card){
   card.classList.add('decision-card-v2');
   const body=card.querySelector('.listing-body');
-  const title=card.querySelector('.listing-topline h3')?.textContent?.trim() || 'Listing';
   const area=card.querySelector('.listing-topline p')?.textContent?.trim() || '';
   const status=card.dataset.status || card.querySelector('.chips span')?.textContent?.trim() || 'To Call';
   const notes=card.querySelector('.notes')?.textContent?.trim() || '';
@@ -60,7 +58,7 @@ function enhanceCard(card){
 
   const actions=document.createElement('div');
   actions.className='decision-actions';
-  actions.innerHTML=`${primary?primary.outerHTML:'<button class="decision-primary" data-edit="">Review details</button>'}<button class="decision-more-toggle" type="button">More</button>`;
+  actions.innerHTML=primary?primary.outerHTML:'<button class="decision-primary" data-edit="">Review details</button>';
   const lead=body.querySelector('.lead-bar') || body.querySelector('.price-line');
   lead?.after(actions);
 
@@ -68,9 +66,8 @@ function enhanceCard(card){
   more.className='listing-more';
   const fullNotes=notes?`<p class="notes">${escapeHtml(notes)}</p>`:'';
   const verify=body.querySelector('details:not(.listing-more)')?.outerHTML || '';
-  more.innerHTML=`<summary>Why / full actions</summary><div class="listing-more-inner">${fullNotes}${verify}<div class="action-row">${source}${edit}${otherActions(existingActions,primarySource)}${danger}</div></div>`;
+  more.innerHTML=`<summary>Details & actions</summary><div class="listing-more-inner">${fullNotes}${verify}<div class="action-row">${source}${edit}${otherActions(existingActions,primarySource)}${danger}</div></div>`;
   actions.after(more);
-  actions.querySelector('.decision-more-toggle')?.addEventListener('click',()=>{more.open=!more.open;});
 }
 
 function verdictText(status){
